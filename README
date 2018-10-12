@@ -1,0 +1,84 @@
+== Codon optimization based on the mRNA folding energy and the codon frequency
+
+version 0.1
+
+
+==== Requirements
+
+EnsembleEnergy program in RNAstructure package
+https://rna.urmc.rochester.edu/RNAstructure.html
+
+
+==== Usage
+
+For example,
+$ mkdir output_directory
+$ codon_optimization_HC.pl misc/translation_table_11 misc/codon_frequency_Rery seq/gi_21219378.fa utr/pTip.fa output_directory > result.txt
+Using the translation table in "translation_table_11" and the codon frequency in "codon_frequency_Rery",
+this optimizes a sequence in "gi_21219378.fa" considering the UTR sequence in "pTip.fa". 
+The optimized sequences are output to "output_directory",
+and the detail information is written to "result_file.txt".
+
+
+==== Options
+
+--cai_thsh
+Threshold of CAI
+default: 0.75
+
+--rcc_thsh
+Threshold of the rare codon count
+default: 0
+
+--adptw_thsh
+Threshold of the normalized codon frequency for defining rare codons
+
+--gen_st
+Start position of the region to be optimized
+default 0
+
+--gen_sp
+Stop position of the region to be optimized
+default 11
+
+NOTE:
+Specify codon-wise positions using a 0-based, left-close, right-open interval. 
+e.g. "--gen_st 0 --gen_sp 11" will optimize the 33 head nucleotides (11 codons) at the head of a coding sequence
+
+--n_top
+Number of the optimized sequences output to the output_directory.
+default: 3
+
+--tmp_dir
+Temporary directory for EnsembleEnergy program
+default: /tmp
+
+--ithr
+--nthr
+Assume this run is the i-th thread in the n total threads
+default: --ithr 0 --nthr 1
+
+NOTE:
+For parallelization, one can do like:
+for i in `seq 0 39` ; do
+codon_optimization_HC.pl --ithr $i --nthr 40 ...
+done
+
+
+==== History
+
+* version 0.1
+- implemented the algorithms described in [Saito et al, submitted]
+
+
+==== References
+
+Yutaka Saito, Wataru Kitagawa, Toshitaka Kumagai, Naoyuki Tajima, Yoshiyuki Nishimiya, Koichi Tamano, Yoshiaki Yasutake, Tomohiro Tamura, Tomoshi Kameda1.
+Developing a codon optimization method for improved expression of recombinant proteins in actinobacteria.
+submitted.
+
+
+==== Contact
+
+Yutaka Saito
+yutaka.saito AT aist.go.jp

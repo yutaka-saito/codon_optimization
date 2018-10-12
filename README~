@@ -1,0 +1,107 @@
+== Codon optimization based on the mRNA folding energy and the codon frequency
+
+version 0.1
+
+
+==== Requirements
+
+EnsembleEnergy program in RNAstructure package
+https://rna.urmc.rochester.edu/RNAstructure.html
+
+
+==== Usage
+
+For example,
+$ codon_optimization_HC.pl misc/translation_table misc/codon_frequency example/gi_21219378.fa utr/pTip.fa output_directory >  
+
+
+
+Cosearge consists of three steps.
+(1) normalization
+(2) search
+(3) test
+
+(1) normalize a HiC contact matrix
+$ 3DColocNormalize --proc n --verbose example/matrix/chr22
+
+(2) search for the colocalization of genomic elements
+$ 3DColocSearch --suffix_smp n example/matrix/chr22 example/element/mRNA.chr22.bed example/element/gap.chr22.txt example/out/subset example/out/score
+
+(3) test the colocalization for detected subsets
+$ for i in `seq 0 9` ; do
+3DColocTest --suffix n example/matrix/chr22 example/out/subset.$i example/element/gap.chr22.txt example/out/pz.$i /dev/null
+done
+
+For help,
+$ 3DColocNormalize --help
+$ 3DColocSearch --help
+$ 3DColocTest --help
+
+
+==== Input files
+
+You need following input files:
+(1) HiC contact matrix
+(2) genomic elements
+(3) chromosome gaps
+
+(1) HiC contact matrix
+The HiC contact matrix is represented by several files included in one directry.
+See example/matrix/chr22 that contains the HiC contact matrix of the human chromosome 22.
+"binNumber" contains the number of bins. (1243 bins)
+"resolution" contains the length of each bin. (40000 bp)
+Note that "binNumber * resolution" is equal to the length of the human chromosome 22. (1243 * 40000)
+"positionIndex" contains the genomic position of each bin. (0, 40000, 80000, 120000, ...)
+"genomeIdxToLabel" contains the index given to each chromosome.
+In this example, the HiC contact matrix represents only one chromosome, the human chromosome 22, and thus the index "0" is given to the chromosome "22".
+"chromosomeIndex" contains the index of the chromosome to which each bin belongs.
+In this example, all bins belong to the chromosome "22" whose index is "0".
+"chromosomeStarts" contains the i-th bin from which each chromosome starts.
+In this example, there is only one chromosome, which starts from the 0-th bin.
+"heatmap" contains the contact intensities represented as the binNumber*binNumber matrix.
+After the normalization step by 3DColocNormalize, the two additional files are produced.
+"heatmap_n" contains the normalized contact intensities.
+"statistics_n" contains the summary statistics used in normalization.
+
+(2) genomic elements
+The genomic elements are represented by BED format.
+See example/element/mRNA.chr22.bed that contains all known mRNA transcripts in the human chromosome 22.
+
+(3) chromosome gaps
+The chromosome gaps are represented by gap table format used in the UCSC genome database.
+See example/element/gap.chr22.txt that contains gap positions in the human chromosome 22.
+
+
+==== Output format
+
+After the search step by 3DColocSearch, two kinds of output files are produced.
+
+(1) colocalized subsets of genomic elements
+See example/out/subset.*
+
+(2) colocalization scores
+See example/out/score.*
+
+After the test step by 3DColocTest, additional output files are produced.
+
+(3) p-values and z-scores of colocalization scores
+See example/out/pz.*
+
+
+==== History
+
+* version 0.1
+- implemented the algorithms described in [Saito et al, submitted]
+
+
+==== References
+
+Yutaka Saito, Wataru Kitagawa, Toshitaka Kumagai, Naoyuki Tajima, Yoshiyuki Nishimiya, Koichi Tamano, Yoshiaki Yasutake, Tomohiro Tamura, Tomoshi Kameda1.
+Developing a codon optimization method for improved expression of recombinant proteins in actinobacteria.
+submitted.
+
+
+==== Contact
+
+Yutaka Saito
+yutaka.saito AT aist.go.jp
